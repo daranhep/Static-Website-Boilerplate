@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const CleanWebpackPlugin = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
@@ -14,6 +15,7 @@ module.exports = {
     minimizer: [new UglifyJsPlugin({}), new OptimizeCSSAssetsPlugin({})]
   },
   plugins: [
+    new CleanWebpackPlugin(["dist"]),
     new HtmlWebPackPlugin({
       template: "app/index.html"
     }),
@@ -39,7 +41,7 @@ module.exports = {
         use: [{ loader: "html-loader", options: { minimize: true } }]
       },
       {
-        test: /\.(png|jpe?g)/i,
+        test: /\.(gif|png|jpe?g|svg)$/i,
         use: [
           {
             loader: "url-loader",
@@ -49,7 +51,20 @@ module.exports = {
             }
           },
           {
-            loader: "img-loader"
+            loader: "image-webpack-loader",
+            options: {
+              mozjpeg: {
+                progressive: true,
+                quality: 80
+              },
+              optipng: {
+                enabled: false
+              },
+              pngquant: {
+                quality: "65-90",
+                speed: 4
+              }
+            }
           }
         ]
       },
